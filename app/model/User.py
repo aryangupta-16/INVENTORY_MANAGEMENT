@@ -11,4 +11,5 @@ class User(Base):
     password = Column(String)
     phone = Column(String, nullable=True)
     
+    customer = relationship("Customer",back_populates="user")
     products = relationship("Product", back_populates="user")
