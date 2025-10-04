@@ -2,6 +2,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.api.User_route import router as User
 from app.api.Product_route import router as Product
+from app.api.Stock_route import router as Stock
+from app.api.Customer_route import router as Customer
 from app.config.database import engine, Base
 
 app = FastAPI()
@@ -13,6 +15,8 @@ app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], all
 
 app.include_router(User)
 app.include_router(Product)
+app.include_router(Stock)
+app.include_router(Customer)
 
 if __name__ == "__main__":
     import uvicorn # @UnresolvedImport
