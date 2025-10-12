@@ -14,5 +14,5 @@ class Stock(Base):
     reason = Column(String, nullable=True)   
     created_at = Column(DateTime, default=datetime.utcnow)
     
-    product = relationship("Product")
+    product = relationship("Product",back_populates="stock_entries")
     user = relationship("User")

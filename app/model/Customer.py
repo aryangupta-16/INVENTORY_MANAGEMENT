@@ -13,4 +13,4 @@ class Customer(Base):
     user_id = Column(Integer, ForeignKey("users.id"))
     
     user = relationship("User", back_populates="customer")
-    purchases = relationship("CustomerPurchase", back_populates="customer")
+    purchases = relationship("CustomerPurchase", back_populates="customer",cascade="all, delete-orphan")

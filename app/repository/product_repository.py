@@ -2,17 +2,26 @@ from sqlalchemy.orm import Session # @UnresolvedImport
 from typing import List, Optional
 from app.model.Product import Product
 from app.schema.ProductSchema import ProductCreate, ProductUpdate
+from app.service import ai_service
 
 
 def create_product(db:Session,product_in: ProductCreate, user_id: int):
+    print("prod_in", product_in)
     db_product = Product(**product_in.model_dump(), user_id=user_id)
     db.add(db_product)
     db.commit()
     db.refresh(db_product)
+    
+    ai_service.update_product_vector(db, db_product)
+    
     return db_product
 
 def get_by_id(db: Session, product_id: int, user_id: int):
     return db.query(Product).filter(Product.id == product_id, Product.user_id == user_id).first()
+
+def get_product_by_name(db:Session,product_name: str, user_id:int):
+    return db.query(Product).filter(Product.user_id == user_id, Product.name == product_name).first()
+
 
 def list(
         db: Session,
@@ -41,6 +50,9 @@ def update(db: Session, product: Product, updates: ProductUpdate) -> Product:
         db.add(product)
         db.commit()
         db.refresh(product)
+        
+        ai_service.update_product_vector(db, product)
+        
         return product
 
 def delete(db: Session, product: Product) -> Product:

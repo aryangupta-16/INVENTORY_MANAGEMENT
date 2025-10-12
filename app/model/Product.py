@@ -16,3 +16,4 @@ class Product(Base):
     
     user_id = Column(Integer, ForeignKey("users.id"))  
     user = relationship("User", back_populates="products")
+    stock_entries = relationship("Stock", back_populates="product",cascade="all, delete-orphan")
