@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, ForeignKey # @unresolvedImport
 from sqlalchemy.orm import relationship # @unresolvedImport
-from app.config.database import Base
+from app.config.database import Base, engine
 
 
 class Customer(Base):
@@ -11,6 +11,8 @@ class Customer(Base):
     email = Column(String,nullable=False)
     phone = Column(String,nullable=False)
     user_id = Column(Integer, ForeignKey("users.id"))
+    pending = Column(Integer, default = 0)
     
     user = relationship("User", back_populates="customer")
     purchases = relationship("CustomerPurchase", back_populates="customer",cascade="all, delete-orphan")
+    

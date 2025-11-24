@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, ForeignKey, Float, DateTime # @unresolvedImport
 from sqlalchemy.orm import relationship # @unresolvedImport
 from datetime import datetime
-from app.config.database import Base
+from app.config.database import Base, engine
 
 class CustomerPurchase(Base):
     __tablename__ = "customer_purchases"
@@ -12,6 +12,7 @@ class CustomerPurchase(Base):
     quantity = Column(Integer, nullable=False)
     price = Column(Float, nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)
+    paid = Column(Integer, default=0)
 
     customer = relationship("Customer", back_populates="purchases")
     product = relationship("Product")

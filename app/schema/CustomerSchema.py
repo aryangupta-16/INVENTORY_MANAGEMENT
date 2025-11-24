@@ -31,6 +31,7 @@ class CustomerPurchaseCreate(BaseModel):
     customer_id: int = Field(..., gt=0)
     product_id: int = Field(..., gt=0)
     quantity: int = Field(..., gt=0, description="Quantity purchased must be positive")
+    paid: int = Field(...,gt=0)
 
 
 class CustomerPurchaseOut(BaseModel):

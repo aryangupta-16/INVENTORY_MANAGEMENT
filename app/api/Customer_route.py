@@ -27,7 +27,7 @@ def delete_customer(customer_id,db:Session = Depends(get_db), user :int= Depends
 
 @router.post("/purchase", response_model=CustomerPurchaseOut)
 def add_purchase_endpoint(payload: CustomerPurchaseCreate, db: Session = Depends(get_db), user: int = Depends(get_current_user)):
-    purchase = add_purchase(db, user.id, payload.customer_id, payload.product_id, payload.quantity)
+    purchase = add_purchase(db, user.id, payload.customer_id, payload.product_id, payload.quantity, payload.paid)
     if not purchase:
         raise HTTPException(status_code=400, detail="Invalid customer/product or insufficient stock")
     return purchase

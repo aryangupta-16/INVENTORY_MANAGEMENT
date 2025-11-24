@@ -7,7 +7,6 @@ from app.repository.product_repository import get_by_id
 from app.model.Customer import Customer
 from app.model.Customer_Purchase import CustomerPurchase
 from app.schema.CustomerSchema import CustomerCreate
-from app.service import ai_service
 from app.exception import ConflictError, NotFoundError
 from app.repository import stock_repository
 
@@ -36,8 +35,10 @@ def delete_customer(customer_id: int, db:Session, user_id: int):
     return repo_delete_customer(db,customer)
 
 
-def add_purchase(db: Session, user_id: int, customer_id: int, product_id: int, quantity: int) -> CustomerPurchase:
+def add_purchase(db: Session, user_id: int, customer_id: int, product_id: int, quantity: int, paid:int) -> CustomerPurchase:
     customer = get_customer(db,user_id,customer_id)
+    
+    print(customer)
     
     if not customer:
         raise NotFoundError("Customer")
@@ -47,7 +48,12 @@ def add_purchase(db: Session, user_id: int, customer_id: int, product_id: int, q
     if not product:
         raise NotFoundError("Product")
     
-    added = repo_add_purchase(db, user_id, customer_id, product_id, quantity)
+    totalPrice = product.price * quantity
+    pendingAmount = customer.pending
+    pendingAmount = pendingAmount + totalPrice - paid
+    customer.pending = pendingAmount
+    
+    added = repo_add_purchase(db, user_id, customer_id, product_id, quantity,paid)
     
     stock_repository.remove_stock(db,product_id,user_id,quantity,f'{customer.name} purchased {quantity} {product.unit} of {product.name}')
     return added

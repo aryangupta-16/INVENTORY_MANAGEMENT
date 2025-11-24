@@ -3,7 +3,6 @@ from app.repository import product_repository
 from sqlalchemy.orm import Session # @UnresolvedImport
 from typing import List, Optional
 from app.model.Product import Product
-from app.service import ai_service
 from app.exception import ConflictError, NotFoundError
 from app.repository import stock_repository
 

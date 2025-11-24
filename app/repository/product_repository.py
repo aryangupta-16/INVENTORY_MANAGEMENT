@@ -2,7 +2,6 @@ from sqlalchemy.orm import Session # @UnresolvedImport
 from typing import List, Optional
 from app.model.Product import Product
 from app.schema.ProductSchema import ProductCreate, ProductUpdate
-from app.service import ai_service
 
 
 def create_product(db:Session,product_in: ProductCreate, user_id: int):
@@ -12,7 +11,6 @@ def create_product(db:Session,product_in: ProductCreate, user_id: int):
     db.commit()
     db.refresh(db_product)
     
-    ai_service.update_product_vector(db, db_product)
     
     return db_product
 
@@ -44,16 +42,39 @@ def list(
             q = q.filter(Product.price <= price_max)
         return q.offset(skip).limit(limit).all()
     
-def update(db: Session, product: Product, updates: ProductUpdate) -> Product:
-        for key, value in updates.dict(exclude_unset=True).items():
-            setattr(product, key, value)
-        db.add(product)
-        db.commit()
-        db.refresh(product)
+# def update(db: Session, product: Product, updates: ProductUpdate) -> Product:
+    
+        # print("updatingggg", product)
+        # for key, value in updates.dict(exclude_unset=True).items():
+        #     setattr(product, key, value)
+        # db.add(product)
+        # db.commit()
+        # db.refresh(product)
         
-        ai_service.update_product_vector(db, product)
+        # print("product update finished", product)
+        # return product
         
-        return product
+def update(db: Session, product: Product, updates) -> Product:
+    
+    # If updates is a dict, use it directly; if Pydantic model, convert to dict
+    if hasattr(updates, "dict"):
+        updates_dict = updates.dict(exclude_unset=True)
+    elif isinstance(updates, dict):
+        updates_dict = updates
+    else:
+        raise ValueError("updates must be dict or Pydantic model")
+
+    for key, value in updates_dict.items():
+        setattr(product, key, value)
+    
+    db.add(product)
+    db.commit()
+    db.refresh(product)
+    
+    return product
+
+        
+        
 
 def delete(db: Session, product: Product) -> Product:
         db.delete(product)

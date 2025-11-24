@@ -7,8 +7,22 @@ from app.schema.ProductSchema import ProductCreate, ProductOut, ProductUpdate
 from app.service import product_service as ProductService
 from app.config.database import get_db
 from app.utils.security import get_current_user
+from app.agents.inventory_agent import InventoryAgent
+from app.agents.customer_agent import CustomerAgent
+from app.agents.router_agent import RouterAgent
 
 router = APIRouter(prefix="/products", tags=["products"])
+
+@router.get("/v1/test")
+def test(db: Session = Depends(get_db), user: int = Depends(get_current_user)):
+    agent = RouterAgent()
+
+    user_query = "Get me detailed list of all the products"
+    response = agent.handle_query(user_query)
+
+    # print("Raw Result:", response["result"])
+    print("LLM Response:", response)
+    return {"response": response}
 
 @router.post("/", response_model=ProductOut, status_code=201)
 def create_product(
@@ -55,3 +69,4 @@ def delete_product(product_id: int, db: Session = Depends(get_db), user: int = D
     if not deleted:
         raise HTTPException(status_code=404, detail="Product not found or not owned by vendor")
     return {"message": "Product deleted successfully"}
+
